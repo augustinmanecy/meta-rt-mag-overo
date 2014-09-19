@@ -1,0 +1,21 @@
+SUMMARY = "Initial directories for the RT-MaG ToolBox"
+DESCRIPTION = "This package creates the directories with the needed files to rune the RT-MaG ToolBox."
+LICENSE = "GPLv2"
+LIC_FILES_CHKSUM = "file://${COREBASE}/meta-pansenti/recipes-custom-user/COPYING;md5=751419260aa954499f7abaabaa882bbe"
+
+PR = "r0"
+
+SRC_URI = "file://PutFTP \
+	   file://RunModel \
+	   file://UpToDateModel \
+	  "
+
+do_install () {
+	install -d ${D}/home/root/RT-MaG_ToolBox/
+	install -d ${D}/home/root/RT-MaG_ToolBox/RT-MaG_Program/
+	install -d ${D}/home/root/RT-MaG_ToolBox/RT-MaG_TestDev/
+	install -m 0744 ${WORKDIR}/PutFTP ${D}/home/root/RT-MaG_ToolBox/RT-MaG_Program/PutFTP
+	install -m 0744 ${WORKDIR}/RunModel ${D}/home/root/RT-MaG_ToolBox/RT-MaG_Program/RunModel
+	install -m 0744 ${WORKDIR}/UpToDateModel ${D}/home/root/RT-MaG_ToolBox/RT-MaG_Program/UpToDateModel
+}
+

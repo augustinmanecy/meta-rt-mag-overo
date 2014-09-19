@@ -1,0 +1,38 @@
+#!/bin/sh
+
+ModelName1="In_Alone_MultiTask_Clock"
+ModelName2="In_Alone_MultiTask_RS232"
+ModelName3="In_Alone_SingleTask_Clock"
+ModelName4="In_Alone_SingleTask_RS232"
+ModelName5="InOut_Full_MultiTask_Clock"
+ModelName6="InOut_Full_MultiTask_RS232"
+ModelName7="InOut_Full_SingleTask_Clock"
+ModelName8="InOut_Full_SingleTask_RS232"
+ModelName9="Out_Alone_MultiTask_Clock"
+ModelName10="Out_Alone_SingleTask_Clock"
+
+NbFile=10
+
+# get the RT-MaG profile data
+source ~/RT_MaG_ToolBox/LoadProfile
+
+N=1
+while test "$N" -le "$NbFile"
+do 
+	# make the ModelName"N" the current file
+	eval "ModelName=\$ModelName"$N
+	# define the name of the executable to create 
+	eval "ExecName=COM_\$ModelName"$N"_RT"
+	# Up to date the model
+	eval n | ./UpToDateModel $ModelName
+	# check if compilation was successfully done
+	eval res=`ls ./Sources/COM_"$model_name"_sources |grep "$exec_name"`
+	if test $res = $ExecName
+	then
+		echo "$ModelName: SUCCESSFULLY COMPILED!"	
+	else
+		echo "$ModelName: COMPILATION FAILED!"
+	fi
+	N=$(($N+1))
+done
+

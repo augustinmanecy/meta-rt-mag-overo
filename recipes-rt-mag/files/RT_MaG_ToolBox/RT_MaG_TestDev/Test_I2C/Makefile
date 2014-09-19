@@ -1,0 +1,46 @@
+#############################################################################
+#
+#	Makefile for building a I2C demo application making simple communication 
+#		an arduino board 
+#
+#############################################################################
+
+APPNAME= DemoI2C
+CC=gcc
+CFLAGS += \
+	-std=gnu99 \
+	-Wall \
+	-Wimplicit \
+	-Wpointer-arith \
+	-Wswitch \
+	-Wredundant-decls \
+	-Wreturn-type \
+	-Wshadow \
+	-Wunused \
+	-Wcast-qual \
+	-Wnested-externs \
+	-Wmissing-prototypes \
+	-Wstrict-prototypes \
+	-Wmissing-declarations \
+EXEC= $(APPNAME)
+SRC= \$(wildcard *.c)
+OBJ= \$(SRC:.c=.o)
+
+all: \$(EXEC)
+
+\$(EXEC): \$(OBJ)
+	\$(CC) -o \$@ \$^ \$(CFLAGS)
+
+%.o: %.c
+	@echo "Compiling $< ..."
+	\$(CC) -o \$@ -c \$< \$(CFLAGS)
+
+.PHONY: clean mrproper
+
+clean:
+	@echo "Cleaning $< ..."
+	rm -rf *.o
+
+mrproper: clean
+	rm -rf \$(EXEC)
+

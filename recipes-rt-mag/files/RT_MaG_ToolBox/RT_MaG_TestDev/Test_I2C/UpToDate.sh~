@@ -1,0 +1,53 @@
+################# UpToDate.sh #################
+#
+# This shell script allows to download/uptodate 
+# and compile automatically the Test program:
+#       Test_CustomBaudRate
+#
+# USAGE (for the first downloading, then just call: "./UpToDate.sh"):
+#
+# 1) On your Gumstix, type: 
+#    wget ftp://overo:gumstix@192.168.137.1/TestProgram/Test_I2C/UpToDate_DOS.sh
+#              ^      ^          ^
+#              |      |          |
+#            login  password  server's IP
+# 
+# 2) Then convert your DOS file to a UNIX file:
+#    sed 's/.$//' UpToDate_DOS.sh > UpToDate
+#    rm UpToDate_DOS.sh
+#
+# 3) Make your script exectable:
+#    chmod +x UpToDate
+#
+###############################################
+
+
+#!/bin/sh
+
+# load RT-MaG profile data
+source ~/RT_MaG_ToolBox/LoadProfile
+	
+# remove files
+	make clean
+	
+# update files
+	eval wget ftp://"$USER":"$PASSWD"@"$HOST"/TestProgram/Test_I2C/DemoI2C.c
+	eval wget ftp://"$USER":"$PASSWD"@"$HOST"/TestProgram/Test_I2C/library_I2C.c
+	eval wget ftp://"$USER":"$PASSWD"@"$HOST"/TestProgram/Test_I2C/library_I2C.h
+	eval wget ftp://"$USER":"$PASSWD"@"$HOST"/TestProgram/Test_I2C/defines_verdex.h
+	eval wget ftp://"$USER":"$PASSWD"@"$HOST"/TestProgram/Test_I2C/time_tools.h
+	eval wget ftp://"$USER":"$PASSWD"@"$HOST"/TestProgram/Test_I2C/time_tools.c
+	
+# compile the program
+	make 
+	# check if successful
+	eval res=`ls |grep "$exec_name"`
+	if test $res=$exec_name
+	then
+		echo "$exec_name SUCCESSFULLY COMPILED!"	
+	else
+		echo "COMPILATION FAILED!"
+	fi
+	echo ""
+
+	

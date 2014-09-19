@@ -1,0 +1,28 @@
+#!/bin/sh
+
+if test $# -lt 1
+        then
+                echo "SYNTAX ERROR: $0 <file name 1> ... <filename n>"
+fi
+
+# build the list of file to put via FTP
+FileList="$1"
+N=1
+while test "$N" -le "$#"
+do
+	shift
+	FileList="$FileList $1"
+done
+
+# recover the connection parameters
+source ~/RT_MaG_ToolBox/LoadProfile
+
+# open ftp connection
+ftp -n -v $HOST << FTP
+user $USER $PASSWD
+prompt
+ascii
+mput $FileList
+bye
+FTP
+

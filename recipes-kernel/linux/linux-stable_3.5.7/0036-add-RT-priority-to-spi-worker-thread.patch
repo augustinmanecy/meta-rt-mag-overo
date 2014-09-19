@@ -1,0 +1,25 @@
+From 3abb104a854cefd42dfd927e83fa1912646fd63d Mon Sep 17 00:00:00 2001
+From: Auto Configured <auto.configured>
+Date: Sat, 6 Sep 2014 00:36:58 +0200
+Subject: [PATCH] add RT priority to spi worker thread
+
+---
+ drivers/spi/spi-omap2-mcspi.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/spi/spi-omap2-mcspi.c b/drivers/spi/spi-omap2-mcspi.c
+index d9848fe..505b87a 100644
+--- a/drivers/spi/spi-omap2-mcspi.c
++++ b/drivers/spi/spi-omap2-mcspi.c
+@@ -1197,6 +1197,8 @@ static int __devinit omap2_mcspi_probe(struct platform_device *pdev)
+ 
+ 	if (status || omap2_mcspi_master_setup(mcspi) < 0)
+ 		goto disable_pm;
++		
++	master->rt = 1;
+ 
+ 	status = spi_register_master(master);
+ 	if (status < 0)
+-- 
+1.7.9.5
+

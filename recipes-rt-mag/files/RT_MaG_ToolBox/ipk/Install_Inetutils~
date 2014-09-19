@@ -1,0 +1,5 @@
+#!/bin/sh
+
+opkg install libreadline5_5.2-r8.6_armv7a.ipk
+opkg install inetutils_1.8-r8.6_armv7a.ipk
+

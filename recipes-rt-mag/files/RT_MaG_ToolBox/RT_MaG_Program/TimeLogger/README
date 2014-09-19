@@ -1,0 +1,30 @@
+HOW TO PLOT CPU LOAD AND TASK EXECUTION TIME IN MATLAB?
+
+1) Run a model with the Time Logger activated (in the configuration block)
+
+2) Run the following command in your COM terminal to send the "TimeLogger" data to the FTP server:
+
+	root@overo:~/RT_MaG_ToolBox/RT_MaG_Program# ./SendTimeLogger
+	
+	You recover in the FTP server an archive as following:
+	
+     + TimeLogger.zip
+     |--- TimeLogger_Task0.csv : ';' delimited file with Task0' data
+     |--- ... 
+     |--- TimeLogger_TaskN.csv : ';' delimited file with Task0' data
+     |--- top-output.txt       : text file with the CPU history of each PID (results of top command)
+     |--- README.txt           : text file with instructions to plot these data in MATLAB
+
+3) Unzip this archive and run in your Matlab command window (with the path of the unzipped directory as argument):
+	
+	>> ProcessCpuLoadLogger(<UnzippedDirectory>) 
+
+	This function allow to visualize all the processus which where running onto the COM during the modele execution, and which CPU load corresponds to each processus.
+	
+4) Run in your Matlab command window (with the path of the unzipped directory as argument):
+	
+	>> ProcessTaskTimeLogger(<UnzippedDirectory>) 
+
+	This function allow to visualize the interval between each step and execution time of each task.
+	
+	

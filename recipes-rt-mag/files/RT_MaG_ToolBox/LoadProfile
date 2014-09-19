@@ -1,0 +1,15 @@
+#! /bin/bash  
+
+N=1
+echo "Recovering profile data:"
+# there ara 4 lines to read, the last one contains the profile data
+while test "$N" -le "4"
+do 
+	N=$(($N+1))
+	IFS=: read HOST USER PASSWD 
+done < ~/RT_MaG_ToolBox/RT_MaG_profile.conf
+
+echo "  => FTP server: $HOST"
+echo "  => UserName  : $USER"
+echo "  => Password  : ****"
+

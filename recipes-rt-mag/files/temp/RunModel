@@ -1,0 +1,40 @@
+################# RunModel.sh #################
+#
+# This shell script allows to put a file (given in argument)
+# 
+#
+# USAGE (for the first downloading):
+#
+# 1) On your Gumstix, type: 
+#    wget ftp://overo:gumstix@192.168.137.1/RunModel_DOS.sh
+#              ^      ^          ^
+#              |      |          |
+#            login  password  server's IP
+# 
+# 2) Then convert your DOS file to a UNIX file:
+#    sed 's/.$//' RunModel_DOS.sh > RunModel
+#    rm RunModel_DOS.sh
+#
+# 3) Make your script exectable:
+#    chmod +x RunModel
+#
+###############################################
+
+#!/bin/sh
+
+# $1 contain the name of the model to update from host
+# $2 (optional) contain the name of the model to update from host
+
+# declaration of variable:
+    model_name=$1	# model name to run
+    arg_str=$*		# list of argument
+
+# recover the index corresponding to the first argument for the model's excutable
+eval ind=`expr index "$arg_str" ' '`
+# echo the command to run the model
+arg_list=${arg_str:$ind}
+command=./Sources/COM_"$model_name"_sources/COM_"$model_name"_RT" $arg_list"
+echo "$command"
+# run the model with specified argument
+eval "$command"
+

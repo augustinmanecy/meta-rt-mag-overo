@@ -1,0 +1,44 @@
+#!/bin/sh
+
+################## Pullftp.sh #################
+#
+# This shell script allows to put a file (given in argument)
+# 
+#
+# USAGE (for the first downloading):
+#
+# 1) On your Gumstix, type: 
+#    wget ftp://overo:gumstix@192.168.137.1/PullFTP_DOS.sh
+#              ^      ^          ^
+#              |      |          |
+#            login  password  server's IP
+# 
+# 2) Then convert your DOS file to a UNIX file:
+#    sed 's/.$//' PullFTP_DOS.sh > PullFTP
+#    rm PullFTP_DOS.sh
+#
+# 3) Make your script exectable:
+#    chmod +x PullFTP
+#
+###############################################
+
+
+# get the RT-MaG profile data
+source ~/RT_MaG_ToolBox/LoadProfile
+
+if test $# -lt 1
+	then
+		echo "SYNTAX ERROR: $0 <file name 1> ... <filename n>"
+fi
+
+# pull each file put in arg
+N=1
+while test "$N" -le "$#"
+do 
+	eval "wget ftp://$USER:$PASSWD@$HOST/\${$N}"
+	N=$(($N+1))
+done
+# close connection
+bye
+EOT
+

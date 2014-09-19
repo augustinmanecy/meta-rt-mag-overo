@@ -1,0 +1,111 @@
+################# UpToDateModel.sh #################
+#
+# This shell script allows to put a file (given in argument)
+# 
+#
+# USAGE (for the first downloading):
+#
+# 1) On your Gumstix, type: 
+#    wget ftp://overo:gumstix@192.168.137.1/UpToDateModel_DOS.sh
+#              ^      ^          ^
+#              |      |          |
+#            login  password  server's IP
+# 
+# 2) Then convert your DOS file to a UNIX file:
+#    sed 's/.$//' UpToDateModel_DOS.sh > UpToDateModel
+#    rm UpToDateModel_DOS.sh
+#
+# 3) Make your script exectable:
+#    chmod +x UpToDateModel
+#
+###############################################
+
+#!/bin/sh
+
+# $1 contain the name of the model to update from host
+# $2 (optional) contain the name of the model to update from host
+
+# declaration of variable:
+	default_IP=192.168.137.3
+	login=overo
+	password=gumstix
+	model_name=$1
+
+# check argument:
+	if test $# -eq 0
+		then
+		echo "SYNTAX ERROR: update_model <model_name> <ip_of_remote_host>"
+	fi
+	if	test $# -eq 1
+		then
+			echo "Recover sources for '$1' from '$default_IP'..."
+			echo "echo disabled..."
+			remote_ip="$default_IP"
+	fi
+	if test $# -eq 2
+		then
+			echo "Recover sources for '$1' from '$2'..."
+			remote_ip="$2"
+	fi
+
+
+# update files
+	rm ./Sources/genere_RT_COM_"$model_name"
+	rm ./Archives/COM_"$model_name"_sources.zip
+	eval wget ftp://"$login":"$password"@"$default_IP"/COM_"$model_name"_sources.zip -P Archives
+	eval wget ftp://"$login":"$password"@"$default_IP"/genere_RT_COM_"$model_name" -P Sources
+
+# give execution right to 'genere_RT_COM_"$model_name"'
+	eval chmod +x genere_RT_COM_"$model_name"
+
+# recover eventual macro to define
+	echo "Do you want define macro for compilation? (y,n)"
+	read macro_to_define
+	if test "$macro_to_define" = "y"
+		then 	
+			echo "enter your macro with space separated (possible macro: ECHO_PRINTF, ECHO_FPRINTF, ECHO_PRINTF_TIME, ECHO_FPRINTF_TIME)"
+			read macro_1 macro_2 macro_3 macro_4
+			nb_macro=0
+			if test -n "$macro_1"
+				then
+					nb_macro=`expr $nb_macro + 1`
+			fi
+			if test -n "$macro_2"
+				then
+					nb_macro=`expr $nb_macro + 1`
+			fi
+			if test -n "$macro_3"
+				then
+					nb_macro=`expr $nb_macro + 1`
+			fi
+			if test -n "$macro_4"
+				then
+					nb_macro=`expr $nb_macro + 1`
+			fi
+	else
+		echo "No macro to define!"
+		nb_macro=0
+	fi
+	
+	echo "$nb_macro defined!"
+# genere executable for 'model_name'
+	eval source ./Sources/genere_RT_COM_"$model_name"
+	
+# test if compilation has succeed 
+		# go in build directory
+	exec_name=COM_"$model_name"_RT
+	eval res=`ls ./Sources/COM_"$model_name"_sources |grep "$exec_name"`
+	if test $res = $exec_name
+	then
+		echo "$exec_name SUCCESSFULLY COMPILED!"
+#		echo "your are now in the build directory and can launch "$exec_name 		
+	else
+		echo "COMPILATION FAILED!"
+	fi
+		
+		
+
+	
+	
+
+

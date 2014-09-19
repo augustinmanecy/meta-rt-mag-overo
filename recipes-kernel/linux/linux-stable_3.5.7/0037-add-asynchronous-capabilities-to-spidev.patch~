@@ -1,0 +1,226 @@
+From fe7b23da33d1b99c511baf39f44a15dc08ae360c Mon Sep 17 00:00:00 2001
+From: Auto Configured <auto.configured>
+Date: Thu, 11 Sep 2014 10:13:05 +0200
+Subject: [PATCH] add asynchronous capabilities to spidev
+
+---
+ drivers/spi/spidev.c       |  103 +++++++++++++++++++++++++++++++++++++++++---
+ include/linux/spi/spidev.h |    9 ++++
+ 2 files changed, 106 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/spi/spidev.c b/drivers/spi/spidev.c
+index 830adbe..745b437 100644
+--- a/drivers/spi/spidev.c
++++ b/drivers/spi/spidev.c
+@@ -4,6 +4,9 @@
+  * Copyright (C) 2006 SWAPP
+  *	Andrea Paterniani <a.paterniani@swapp-eng.it>
+  * Copyright (C) 2007 David Brownell (simplification, cleanup)
++ * Copyright (C) 2014 Augustin Manecy, Stefano Mafrica (add async capabilities)
++ *							 <augustin.manecy@gmail.com>
++ *							 <mafrica.stefano@gmail.com>
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+@@ -85,6 +88,13 @@ struct spidev_data {
+ 	u8			*buffer;
+ };
+ 
++
++struct spidev_control {
++	struct spi_message msg;
++	struct spi_transfer transfer;
++	u32 busy;
++};
++
+ static LIST_HEAD(device_list);
+ static DEFINE_MUTEX(device_list_lock);
+ 
+@@ -92,6 +102,8 @@ static unsigned bufsiz = 4096;
+ module_param(bufsiz, uint, S_IRUGO);
+ MODULE_PARM_DESC(bufsiz, "data bytes in biggest supported SPI message");
+ 
++static struct spidev_control spidev_ctl;
++
+ /*-------------------------------------------------------------------------*/
+ 
+ /*
+@@ -103,6 +115,14 @@ static void spidev_complete(void *arg)
+ 	complete(arg);
+ }
+ 
++/*--------------------------Callback for Completion---------------------------*/
++static void spidev_async_completion_handler(void *arg)
++{
++	/* Mark the message as completed to allow further spi_async() call */
++	spidev_ctl.busy = 0;	
++}
++
++/*--------------------------SPI Sync---------------------------*/
+ static ssize_t
+ spidev_sync(struct spidev_data *spidev, struct spi_message *message)
+ {
+@@ -156,9 +176,71 @@ spidev_sync_read(struct spidev_data *spidev, size_t len)
+ 	return spidev_sync(spidev, &m);
+ }
+ 
++
++/*--------------------------SPI Async---------------------------*/
++static ssize_t
++spidev_async(struct spidev_data *spidev, struct spi_message *message)
++{
++	int status;
++	unsigned long flags;	// added
++	
++	/* redirect to the function managing the busy flag */
++	message->complete = spidev_async_completion_handler;
++	message->context = NULL;	// no completion stack
++
++	spin_lock_irqsave(&spidev->spi_lock, flags);	// changed to *_irqsave
++	if (spidev->spi == NULL)
++		status = -ESHUTDOWN;
++	else 
++		status = spi_async(spidev->spi, message);	
++	spin_unlock_irqrestore(&spidev->spi_lock, flags);	// changed to *_irqrestore
++
++	if (status == 0) {
++		spidev_ctl.busy = 1;
++	}
++	return status;
++}
++
++static inline ssize_t
++spidev_async_write(struct spidev_data *spidev, size_t len)
++{
++	/* I take advantage of the busy flag to not treat the new message; to let the previous one terminate properly...
++	/*      => need to check that it ws not incompatible with SPI_IOC_MESSAGE(>1) */
++	if (spidev_ctl.busy == 0){
++		spi_message_init(&spidev_ctl.msg);
++		spi_message_add_tail(&spidev_ctl.transfer, &spidev_ctl.msg);
++		return spidev_async(spidev, &spidev_ctl.msg);
++	}
++	else
++	{
++		#ifdef VERBOSE
++			printk("SPI message not sent: previous one still in queue...\n");
++		#endif
++		return -ENOBUFS;	/* No buffer space available: message not sent to not flood spi_worker thread */
++	}
++}
++
++static inline ssize_t
++spidev_async_read(struct spidev_data *spidev, size_t len)
++{
++	/* I take advantage of the busy flag to not treat the new message; to let the previous one terminate properly...
++	/*      => need to check that it ws not incompatible with SPI_IOC_MESSAGE(>1) */
++	if (spidev_ctl.busy == 0){
++		spi_message_init(&spidev_ctl.msg);
++		spi_message_add_tail(&spidev_ctl.transfer, &spidev_ctl.msg);
++		return spidev_async(spidev, &spidev_ctl.msg);
++	}
++	else{
++		#ifdef VERBOSE
++			printk("SPI message not read: previous one still in queue...\n");
++		#endif
++		return -ENOBUFS;	/* No buffer space available: message not read to not flood spi_worker thread */
++	}
++}
++
+ /*-------------------------------------------------------------------------*/
+ 
+-/* Read-only message with current device setup */
++/* Read-only message with current device setup in asynchronous mode*/
+ static ssize_t
+ spidev_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
+ {
+@@ -172,7 +254,7 @@ spidev_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
+ 	spidev = filp->private_data;
+ 
+ 	mutex_lock(&spidev->buf_lock);
+-	status = spidev_sync_read(spidev, count);
++	status = spidev_async_read(spidev, count);
+ 	if (status > 0) {
+ 		unsigned long	missing;
+ 
+@@ -187,7 +269,7 @@ spidev_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
+ 	return status;
+ }
+ 
+-/* Write-only message with current device setup */
++/* Write-only message with current device setup in asynchronous mode*/
+ static ssize_t
+ spidev_write(struct file *filp, const char __user *buf,
+ 		size_t count, loff_t *f_pos)
+@@ -205,7 +287,7 @@ spidev_write(struct file *filp, const char __user *buf,
+ 	mutex_lock(&spidev->buf_lock);
+ 	missing = copy_from_user(spidev->buffer, buf, count);
+ 	if (missing == 0) {
+-		status = spidev_sync_write(spidev, count);
++		status = spidev_async_write(spidev, count);
+ 	} else
+ 		status = -EFAULT;
+ 	mutex_unlock(&spidev->buf_lock);
+@@ -279,8 +361,17 @@ static int spidev_message(struct spidev_data *spidev,
+ #endif
+ 		spi_message_add_tail(k_tmp, &msg);
+ 	}
+-
+-	status = spidev_sync(spidev, &msg);
++	
++	/* synchronous mode enabled by default */
++	switch (u_xfers->pad) {
++		case SPIDEV_ASYNC_MODE:
++			status = spidev_async(spidev, &msg);
++			break;
++		default:
++			status = spidev_sync(spidev, &msg);
++			break;
++	}
++	
+ 	if (status < 0)
+ 		goto done;
+ 
+diff --git a/include/linux/spi/spidev.h b/include/linux/spi/spidev.h
+index 52d9ed0..7c84ac1 100644
+--- a/include/linux/spi/spidev.h
++++ b/include/linux/spi/spidev.h
+@@ -3,6 +3,9 @@
+  *
+  * Copyright (C) 2006 SWAPP
+  *	Andrea Paterniani <a.paterniani@swapp-eng.it>
++ * Copyright (C) 2014 Augustin Manecy, Stefano Mafrica (add async capabilities)
++ *							 <augustin.manecy@gmail.com>
++ *							 <mafrica.stefano@gmail.com>
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+@@ -43,6 +46,9 @@
+ #define SPI_NO_CS		0x40
+ #define SPI_READY		0x80
+ 
++#define SPIDEV_SYNC_MODE	0x00
++#define SPIDEV_ASYNC_MODE	0x01
++
+ /*---------------------------------------------------------------------------*/
+ 
+ /* IOCTL commands */
+@@ -60,6 +66,7 @@
+  * @delay_usecs: If nonzero, how long to delay after the last bit transfer
+  *	before optionally deselecting the device before the next transfer.
+  * @cs_change: True to deselect device before starting the next transfer.
++ * @mode: Selects asynchronous or synchronous read/write (can be SPIDEV_ASYNC_MODE or SPIDEV_SYNC_MODE) 
+  *
+  * This structure is mapped directly to the kernel spi_transfer structure;
+  * the fields have the same meanings, except of course that the pointers
+@@ -93,6 +100,8 @@ struct spi_ioc_transfer {
+ 	__u8		bits_per_word;
+ 	__u8		cs_change;
+ 	__u32		pad;
++	
++	__u8		mode;	// SPIDEV_ASYNC_MODE or SPIDEV_SYNC_MODE
+ 
+ 	/* If the contents of 'struct spi_ioc_transfer' ever change
+ 	 * incompatibly, then the ioctl number (currently 0) must change;
+-- 
+1.7.9.5
+

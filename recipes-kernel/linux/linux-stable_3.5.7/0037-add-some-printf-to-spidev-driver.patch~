@@ -1,0 +1,24 @@
+From 20383a12670c81120b705b744614d2ce59f376c0 Mon Sep 17 00:00:00 2001
+From: Auto Configured <auto.configured>
+Date: Tue, 9 Sep 2014 15:44:18 +0200
+Subject: [PATCH] add some printf to spidev driver
+
+---
+ drivers/spi/spidev.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/spi/spidev.c b/drivers/spi/spidev.c
+index ef485d0..fe670c9 100644
+--- a/drivers/spi/spidev.c
++++ b/drivers/spi/spidev.c
+@@ -31,6 +31,7 @@
+ #include <linux/mutex.h>
+ #include <linux/slab.h>
+ #include <linux/compat.h>
++#include <stdio.h>
+ 
+ #include <linux/spi/spi.h>
+ #include <linux/spi/spidev.h>
+-- 
+1.7.9.5
+

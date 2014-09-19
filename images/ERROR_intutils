@@ -1,0 +1,435 @@
+U-Boot SPL 2013.07-gc9aaf36 (Aug 03 2013 - 02:34:59)
+OMAP SD/MMC: 0
+reading u-boot.img
+reading u-boot.img
+
+
+U-Boot 2013.07-gc9aaf36 (Aug 03 2013 - 02:34:59)
+
+OMAP36XX/37XX-GP ES1.2, CPU-OPP2, L3-165MHz, Max CPU Clock 1 Ghz
+Gumstix Overo board + LPDDR/NAND
+I2C:   ready
+DRAM:  512 MiB
+NAND:  512 MiB
+MMC:   OMAP SD/MMC: 0
+*** Warning - bad CRC, using default environment
+
+In:    serial
+Out:   serial
+Err:   serial
+Board revision: 1
+Tranceiver detected on mmc2
+No EEPROM on expansion board
+Die ID #4a0e00029ff80000015475c20b032018
+Net:   No ethernet found.
+Hit any key to stop autoboot:  0
+mmc0 is current device
+reading boot.scr
+** Unable to read file boot.scr **
+reading uImage
+3289576 bytes read in 215 ms (14.6 MiB/s)
+Booting from mmc ...
+## Booting kernel from Legacy Image at 82000000 ...
+   Image Name:   Linux-3.5.0
+   Image Type:   ARM Linux Kernel Image (uncompressed)
+   Data Size:    3289512 Bytes = 3.1 MiB
+   Load Address: 80008000
+   Entry Point:  80008000
+   Verifying Checksum ... OK
+   Loading Kernel Image ... OK
+
+Starting kernel ...
+
+Uncompressing Linux... done, booting the kernel.
+[    0.000000] Booting Linux on physical CPU 0
+[    0.000000] Initializing cgroup subsys cpuset
+[    0.000000] Initializing cgroup subsys cpu
+[    0.000000] Linux version 3.5.0 (gus@ubuntu) (gcc version 4.7.2 (GCC) ) #1 PREEMPT Sat Aug 3 01:57:23 CEST 2013
+[    0.000000] CPU: ARMv7 Processor [413fc082] revision 2 (ARMv7), cr=10c53c7d
+[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache
+[    0.000000] Machine: Gumstix Overo
+[    0.000000] Memory policy: ECC disabled, Data cache writeback
+[    0.000000] OMAP3630 ES1.2 (l2cache neon isp 192mhz_clk )
+[    0.000000] Clocking rate (Crystal/Core/MPU): 26.0/400/600 MHz
+[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 129792
+[    0.000000] Kernel command line: console=ttyO2,115200n8 mpurate=500 vram=12M omapfb.mode=dvi:1024x768MR-16@60 omapdss.def_disp=dvi root=/dev/mmcblk0p2 rw rootfstype=ext3 rootwait
+[    0.000000] PID hash table entries: 2048 (order: 1, 8192 bytes)
+[    0.000000] Dentry cache hash table entries: 65536 (order: 6, 262144 bytes)
+[    0.000000] Inode-cache hash table entries: 32768 (order: 5, 131072 bytes)
+[    0.000000] allocated 1048576 bytes of page_cgroup
+[    0.000000] please try 'cgroup_disable=memory' option if you don't want memory cgroups
+[    0.000000] Memory: 511MB = 511MB total
+[    0.000000] Memory: 510380k/510380k available, 13908k reserved, 0K highmem
+[    0.000000] Virtual kernel memory layout:
+[    0.000000]     vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+[    0.000000]     fixmap  : 0xfff00000 - 0xfffe0000   ( 896 kB)
+[    0.000000]     vmalloc : 0xe0800000 - 0xff000000   ( 488 MB)
+[    0.000000]     lowmem  : 0xc0000000 - 0xe0000000   ( 512 MB)
+[    0.000000]     pkmap   : 0xbfe00000 - 0xc0000000   (   2 MB)
+[    0.000000]     modules : 0xbf000000 - 0xbfe00000   (  14 MB)
+[    0.000000]       .text : 0xc0008000 - 0xc05ff770   (6110 kB)
+[    0.000000]       .init : 0xc0600000 - 0xc06342b4   ( 209 kB)
+[    0.000000]       .data : 0xc0636000 - 0xc069c580   ( 410 kB)
+[    0.000000]        .bss : 0xc069c5a4 - 0xc07257a0   ( 549 kB)
+[    0.000000] NR_IRQS:474
+[    0.000000] IRQ: Found an INTC at 0xfa200000 (revision 4.0) with 96 interrupts
+[    0.000000] Total of 96 interrupts on 1 active controller
+[    0.000000] OMAP clockevent source: GPTIMER1 at 32768 Hz
+[    0.000000] sched_clock: 32 bits at 32kHz, resolution 30517ns, wraps every 131071999ms
+[    0.000000] OMAP clocksource: 32k_counter at 32768 Hz
+[    0.000000] Console: colour dummy device 80x30
+[    0.000213] Calibrating delay loop... 597.64 BogoMIPS (lpj=2334720)
+[    0.039093] pid_max: default: 32768 minimum: 301
+[    0.039276] Security Framework initialized
+[    0.039398] Mount-cache hash table entries: 512
+[    0.040130] Initializing cgroup subsys debug
+[    0.040161] Initializing cgroup subsys cpuacct
+[    0.040161] Initializing cgroup subsys memory
+[    0.040222] Initializing cgroup subsys devices
+[    0.040222] Initializing cgroup subsys freezer
+[    0.040252] Initializing cgroup subsys perf_event
+[    0.040344] CPU: Testing write buffer coherency: ok
+[    0.040618] Setting up static identity map for 0x80420b58 - 0x80420bb0
+[    0.044616] devtmpfs: initialized
+[    0.049255] dummy:
+[    0.049652] NET: Registered protocol family 16
+[    0.050048] GPMC revision 5.0
+[    0.050079] gpmc: irq-20 could not claim: err -22
+[    0.051696] OMAP GPIO hardware version 2.5
+[    0.053894] omap_mux_init: Add partition: #1: core, flags: 0
+[    0.057678] _omap_mux_get_by_name: Could not find signal uart4_rx.uart4_rx
+[    0.063415] Reprogramming SDRC clock to 400000000 Hz
+[    0.063446] dpll3_m2_clk rate change failed: -22
+[    0.063446] Found NAND on CS0
+[    0.063446] Registering NAND on CS0
+[    0.064666]  usbhs_omap: alias fck already exists
+[    0.071899] hw-breakpoint: debug architecture 0x4 unsupported.
+[    0.074768]  omap-mcbsp.2: alias fck already exists
+[    0.074951]  omap-mcbsp.3: alias fck already exists
+[    0.075988] Switched to new clocking rate (Crystal/Core/MPU): 26.0/400/500 MHz
+[    0.076202] OMAP DMA hardware revision 5.0
+[    0.085021] bio: create slab <bio-0> at 0
+[    0.085815] fixed-dummy:
+[    0.086791] SCSI subsystem initialized
+[    0.087188] usbcore: registered new interface driver usbfs
+[    0.087280] usbcore: registered new interface driver hub
+[    0.087554] usbcore: registered new device driver usb
+[    0.088043] omap_i2c omap_i2c.1: bus 1 rev1.4.0 at 2600 kHz
+[    0.090972] twl 1-0048: PIH (irq 7) chaining IRQs 320..328
+[    0.091125] twl 1-0048: power (irq 325) chaining IRQs 328..335
+[    0.091827] twl4030_gpio twl4030_gpio: gpio (irq 320) chaining IRQs 336..353
+[    0.093170] VUSB1V5: 1500 mV normal standby
+[    0.093719] VUSB1V8: 1800 mV normal standby
+[    0.094329] VUSB3V1: 3100 mV normal standby
+[    0.096282] twl4030_usb twl4030_usb: Initialized TWL4030 USB module
+[    0.096893] vdd_mpu_iva: 600 <--> 1450 mV normal
+[    0.097412] vdd_core: 600 <--> 1450 mV normal
+[    0.098022] VMMC1: 1850 <--> 3150 mV at 3150 mV normal standby
+[    0.098632] VDVI: 1800 mV normal standby
+[    0.109497] omap_i2c omap_i2c.3: bus 3 rev1.4.0 at 400 kHz
+[    0.110382] omap-iommu omap-iommu.0: isp registered
+[    0.110565] Advanced Linux Sound Architecture Driver Version 1.0.25.
+[    0.111694] Switching to clocksource 32k_counter
+[    0.145263] NET: Registered protocol family 2
+[    0.145599] IP route cache hash table entries: 4096 (order: 2, 16384 bytes)
+[    0.146240] TCP established hash table entries: 16384 (order: 5, 131072 bytes)
+[    0.146667] TCP bind hash table entries: 16384 (order: 4, 65536 bytes)
+[    0.146911] TCP: Hash tables configured (established 16384 bind 16384)
+[    0.146942] TCP: reno registered
+[    0.146942] UDP hash table entries: 256 (order: 0, 4096 bytes)
+[    0.146972] UDP-Lite hash table entries: 256 (order: 0, 4096 bytes)
+[    0.147338] NET: Registered protocol family 1
+[    0.147949] RPC: Registered named UNIX socket transport module.
+[    0.147949] RPC: Registered udp transport module.
+[    0.147979] RPC: Registered tcp transport module.
+[    0.147979] RPC: Registered tcp NFSv4.1 backchannel transport module.
+[    0.151275] audit: initializing netlink socket (disabled)
+[    0.151336] type=2000 audit(0.148:1): initialized
+[    0.153411] NFS: Registering the id_resolver key type
+[    0.153503] Key type id_resolver registered
+[    0.154022] jffs2: version 2.2. (NAND) (SUMMARY)  Â© 2001-2006 Red Hat, Inc.
+[    0.154571] msgmni has been set to 996
+[    0.156646] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 253)
+[    0.156677] io scheduler noop registered
+[    0.156677] io scheduler deadline registered (default)
+[    0.157623] omap_uart.0: ttyO0 at MMIO 0x4806a000 (irq = 72) is a OMAP UART0
+[    0.158203] omap_uart.1: ttyO1 at MMIO 0x4806c000 (irq = 73) is a OMAP UART1
+[    0.158935] omap_uart.2: ttyO2 at MMIO 0x49020000 (irq = 74) is a OMAP UART2
+[    0.804931] console [ttyO2] enabled
+[    0.809143] omap_uart.3: ttyO3 at MMIO 0x49042000 (irq = 80) is a OMAP UART3
+[    0.827087] brd: module loaded
+[    0.835357] loop: module loaded
+[    0.840942] twl4030_madc twl4030_madc: clk disabled, enabling
+[    0.849365] NAND device: Manufacturer ID: 0x2c, Chip ID: 0xbc (Micron NAND 512MiB 1,8V 16-bit), page size: 2048, OOB size: 64
+[    0.862335] Creating 5 MTD partitions on "omap2-nand.0":
+[    0.867950] 0x000000000000-0x000000080000 : "xloader"
+[    0.875335] 0x000000080000-0x000000240000 : "uboot"
+[    0.883605] 0x000000240000-0x000000280000 : "uboot environment"
+[    0.891510] 0x000000280000-0x000000680000 : "linux"
+[    0.901977] 0x000000680000-0x000020000000 : "rootfs"
+[    1.410369] smsc911x: Driver version 2008-10-21
+[    1.415618] smsc911x: Driver version 2008-10-21
+[    1.420989] usbcore: registered new interface driver asix
+[    1.426818] usbcore: registered new interface driver cdc_ether
+[    1.433105] usbcore: registered new interface driver cdc_ncm
+[    1.439056] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    2.447906] ehci-omap ehci-omap.0: OMAP-EHCI Host Controller
+[    2.453918] ehci-omap ehci-omap.0: new USB bus registered, assigned bus number 1
+[    2.461883] ehci-omap ehci-omap.0: irq 77, io mem 0x48064800
+[    2.479064] ehci-omap ehci-omap.0: USB 2.0 started, EHCI 1.00
+[    2.485351] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002
+[    2.492523] usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    2.500152] usb usb1: Product: OMAP-EHCI Host Controller
+[    2.505767] usb usb1: Manufacturer: Linux 3.5.0 ehci_hcd
+[    2.511383] usb usb1: SerialNumber: ehci-omap.0
+[    2.517150] hub 1-0:1.0: USB hub found
+[    2.521179] hub 1-0:1.0: 3 ports detected
+[    2.557373] Initializing USB Mass Storage driver...
+[    2.562683] usbcore: registered new interface driver usb-storage
+[    2.569030] USB Mass Storage support registered.
+[    2.573913] musb-hdrc: version 6.0, ?dma?, otg (peripheral+host)
+[    2.588104] musb-hdrc musb-hdrc: USB OTG mode controller at fa0ab000 using DMA, IRQ 92
+[    2.599670] mousedev: PS/2 mouse device common for all mice
+[    2.606048] twl_rtc twl_rtc: Power up reset detected.
+[    2.611511] twl_rtc twl_rtc: Enabling TWL-RTC
+[    2.618408] twl_rtc twl_rtc: rtc core: registered twl_rtc as rtc0
+[    2.626007] i2c /dev entries driver
+[    2.631652] voltdm_scale: No voltage scale API registered for vdd_mpu_iva
+[    2.638854] platform mpu.0: omap_target: unable to scale voltage up.
+[    2.645599] cpuidle: using governor ladder
+[    2.649902] cpuidle: using governor menu
+[    2.654632] omap_hsmmc omap_hsmmc.0: Failed to get debounce clk
+[    3.034027] omap_hsmmc omap_hsmmc.1: Failed to get debounce clk
+[    3.084320] usbcore: registered new interface driver usbhid
+[    3.090240] usbhid: USB HID core driver
+[    3.094970] usbcore: registered new interface driver snd-usb-audio
+[    3.103637] overo SoC init
+[    3.106872] soc-audio soc-audio: ASoC machine overo should use snd_soc_register_card()
+[    3.197021] twl4030-codec twl4030-codec: ASoC: Failed to create Capture debugfs file
+[    3.208923] asoc: twl4030-hifi <-> omap-mcbsp.2 mapping ok
+[    3.220336] oprofile: hardware counters not available
+[    3.225738] oprofile: using timer interrupt.
+[    3.230743] TCP: cubic registered
+[    3.234252] NET: Registered protocol family 17
+[    3.239227] NET: Registered protocol family 15
+[    3.244232] Key type dns_resolver registered
+[    3.249176] VFP support v0.3: implementor 41 architecture 3 part 30 variant c rev 3
+[    3.262939] ThumbEE CPU extension supported.
+[    3.267456] sr_init: No PMIC hook to init smartreflex
+[    3.273437] smartreflex smartreflex.0: omap_sr_probe: SmartReflex driver initialized
+[    3.281982] smartreflex smartreflex.1: omap_sr_probe: SmartReflex driver initialized
+[    3.298309] clock: disabling unused clocks to save power
+[    3.305572] registered taskstats version 1
+[    3.310943] VDVI: incomplete constraints, leaving on
+[    3.318420] twl_rtc twl_rtc: setting system clock to 2000-01-01 00:00:11 UTC (946684811)
+[    3.327239] ALSA device list:
+[    3.330505]   #0: overo
+[    3.334442] Waiting for root device /dev/mmcblk0p2...
+[    3.352294] mmc0: host does not support reading read-only switch. assuming write-enable.
+[    3.364135] mmc0: new high speed SDHC card at address 0002
+[    3.370544] mmcblk0: mmc0:0002 SD16G 14.9 GiB
+[    3.377563]  mmcblk0: p1 p2
+[    3.420684] mmc1: new SDIO card at address 0001
+[    5.287170] kjournald starting.  Commit interval 5 seconds
+[    5.410369] EXT3-fs (mmcblk0p2): using internal journal
+[    5.420471] EXT3-fs (mmcblk0p2): recovery complete
+[    5.425567] EXT3-fs (mmcblk0p2): mounted filesystem with writeback data mode
+[    5.433074] VFS: Mounted root (ext3 filesystem) on device 179:2.
+[    5.450744] devtmpfs: mounted
+[    5.454406] Freeing init memory: 208K
+INIT: version 2.88 booting
+Starting udev
+[    5.984252] udevd[78]: starting version 182
+udevd[86]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:alarmtimer': Input/output error
+
+udevd[88]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:leds-gpio': Input/output error
+
+udevd[87]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:arm-pmu': Input/output error
+
+udevd[93]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap-iommu': Input/output error
+
+udevd[89]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:l3_main': Input/output error
+
+udevd[92]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:mpu': Input/output error
+
+udevd[94]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:musb-omap2430': Input/output error
+
+udevd[100]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap-mcbsp': Input/output error
+
+udevd[99]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap-mcbsp': Input/output error
+
+udevd[96]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap-mcbsp': Input/output error
+
+udevd[97]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap-mcbsp': Input/output error
+
+udevd[101]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:musb-hdrc': Input/output error
+
+udevd[102]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap-pcm-audio': Input/output error
+
+udevd[103]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap2-nand': Input/output error
+
+udevd[98]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap-mcbsp': Input/output error
+
+udevd[104]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap2_mcspi': Input/output error
+
+udevd[105]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap2_mcspi': Input/output error
+
+udevd[106]: failed to execute '/sbin/modprobe' '/sbin/modprobe spi:spidev': Input/output error
+
+udevd[107]: failed to execute '/sbin/modprobe' '/sbin/modprobe spi:spidev': Input/output error
+
+udevd[108]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap2_mcspi': Input/output error
+
+udevd[109]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap2_mcspi': Input/output error
+
+udevd[110]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_dma_system': Input/output error
+
+udevd[111]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_gpio': Input/output error
+
+udevd[113]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_gpio': Input/output error
+
+udevd[114]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_gpio': Input/output error
+
+udevd[115]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_gpio': Input/output error
+
+udevd[112]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_gpio': Input/output error
+
+udevd[116]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_gpio': Input/output error
+
+udevd[117]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_hsmmc': Input/output error
+
+udevd[118]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_hsmmc': Input/output error
+
+udevd[120]: failed to execute '/sbin/modprobe' '/sbin/modprobe mmc:block': Input/output error
+
+udevd[119]: failed to execute '/sbin/modprobe' '/sbin/modprobe mmc:block': Input/output error
+
+udevd[121]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_i2c': Input/output error
+
+udevd[122]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_i2c': Input/output error
+
+udevd[124]: failed to execute '/sbin/modprobe[    6.611236] lib80211: common routines for IEEE802.11 drivers
+' '/sbin/modprobe i2c:dummy': Input/output error
+
+udevd[126]: failed to execute '/sbin/modprobe' '/sbin/modprobe i2c:dummy': Input/output error
+
+udevd[123]: failed to execute '/sbin/modprobe' '/sbin/modprobe i2c:tps65950': Input/output error
+
+udevd[125]: failed to execute '/sbin/modprobe' '/sbin/modprobe i2c:dummy': Input/output error
+
+udevd[128]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_l3_smx': Input/output error
+
+udevd[130]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:twl4030-audio': Input/output error
+
+udevd[132]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:twl4030_madc': Input/output error
+
+udevd[131]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:twl4030_gpio': Input/output error
+
+udevd[135]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_timer': Input/output error
+
+udevd[142]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:twl_reg': Input/output error
+
+udevd[143]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:twl_reg': Input/output error
+
+udevd[148]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:twl4030_usb': Input/output error
+
+udevd[141]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:twl4030_madc_hwmon': Input/output error
+
+udevd[153]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:twl_reg': Input/output error
+
+ude[    6.810546] cfg80211: Calling CRDA to update world regulatory domain
+vd[149]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:twl_reg': Input/output error
+
+udevd[151]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:twl_reg': Input/output error
+
+udevd[155]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:twl4030_wdt': Input/output error
+
+udevd[152]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:twl_reg': Input/output error
+
+udevd[150]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:twl_reg': Input/output error
+
+udevd[158]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_timer': Input/output error
+
+udevd[156]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_timer': Input/output error
+
+udevd[154]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:twl_rtc': Input/output error
+
+udevd[157]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:twl4030-codec': Input/output error
+
+udevd[161]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_timer': Input/output error
+
+udevd[162]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_timer': Input/output error
+
+udevd[163]: failed to execute '/sbin/modprobe' '/sbin/modprobe platf[    6.936737] libertas_sdio: Libertas SDIO driver
+orm:omap_timer': Input/output error
+
+udevd[164]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_timer': Input/output error
+
+udevd[166]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_timer': Input/output error
+
+udevd[169]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_timer': Input/output error
+
+udevd[167]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_timer': Input/output er[    7.011016] libertas_sdio: Copyright Pierre Ossman
+ror
+
+udevd[168]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_timer': Input/output error
+
+udevd[170]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_timer': Input/output error
+
+udevd[171]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_uart': Input/output error
+
+udevd[172]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_uart': Input/output error
+
+udevd[173]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_uart': Input/output error
+
+udevd[174]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:omap_uart': Input/output error
+
+udevd[176]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:reg-dummy': Input/output error
+
+udevd[177]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:reg-fixed-voltage': Input/output error
+
+udevd[178]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:smartreflex': Input/output error
+
+udevd[182]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:smsc911x': Input/output error
+
+udevd[185]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:smsc911x': Input/output error
+
+udevd[179]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:smartreflex': Input/output error
+
+udevd[186]: failed to execute '/sbin/modprobe' '/sbin/modprobe sdio:c07v02DFd9103': Input/output error
+
+udevd[187]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:snd-soc-dummy': Input/output error
+
+udevd[189]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:usbhs_omap': Input/output error
+
+udevd[190]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:ehci-omap': Input/output error
+
+udevd[188]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:soc-audio': Input/output error
+
+udevd[192]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:ohci-omap3': Input/output error
+
+udevd[193]: failed to execute '/sbin/modprobe' '/sbin/modprobe usb:v1D6Bp0002d0305dc09dsc00dp00ic09isc00ip00': Input/output error
+
+udevd[389]: failed to execute '/sbin/modprobe' '/sbin/modprobe platform:regulatory': Input/output error
+
+[    9.480560] libertas_sdio mmc1:0001:1: (unregistered net_device): 00:19:88:37:48:a2, fw 9.70.20p0, cap 0x00000303
+[    9.504394] libertas_sdio mmc1:0001:1: wlan0: Marvell WLAN 802.11 adapter
+Configuring network interfaces... /bin/sh: ifconfig: Input/output error
+Successfully initialized wpa_supplicant
+/bin/sh: ifconfig: Input/output error
+/bin/sh: ifconfig: Input/output error
+route: SIOCADDRT: Network is unreachable
+Tue Feb 18 09:07:00 UTC 2014
+INIT: Entering runlevel: 5
+Starting system message bus: dbus.
+Starting OpenBSD Secure Shell server: sshd
+done.
+Starting ntpd: done
+Starting syslogd/klogd: done
+ * Starting Avahi mDNS/DNS-SD Daemon: avahi-daemon
+   ...done.
+
+Poky 9.0 (Yocto Project 1.4 Reference Distro) 1.4.1 overo ttyO2
+
+overo login:
+

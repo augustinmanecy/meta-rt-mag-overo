@@ -1,0 +1,64 @@
+#ifndef library_i2c_h
+#define library_i2c_h
+	
+	#include <stdint.h>
+	#include <stdio.h>
+	#include <string.h>
+	#include <fcntl.h>
+	#include <sys/ioctl.h>
+	#include <linux/types.h>
+	#include <linux/i2c-dev.h>
+	#include <unistd.h>
+	#include <errno.h>
+	#include "defines_verdex.h"
+	
+	#define MAX(a,b) (a<b)?b:a
+	
+	#define NB_MAX_I2C_DEV 3	// number of I2C device on the Gumstix
+	
+	int32_t InitI2Cbus(uint32_t deviceNum);
+	void CloseI2Cbus(uint32_t deviceNum);
+	
+		/*********************************** DOUBLE ***********************************/
+
+	int32_t SendnDouble_I2C(uint32_t deviceNum, double *ToSend, uint32_t NbToSend, uint8_t slaveAddress);
+	int32_t ReadnDouble_I2C(uint32_t deviceNum, double *ToRead, uint32_t NbToRead, uint8_t slaveAddress);
+	int32_t WaitnDouble_I2C(uint32_t deviceNum, double *ToRead, uint32_t NbToRead, uint8_t slaveAddress, int32_t BlockingTimeOut_us);
+
+	/*********************************** FLOAT ***********************************/
+	int32_t SendnFloat_I2C(uint32_t deviceNum, float *ToSend, uint32_t NbToSend, uint8_t slaveAddress);
+	int32_t ReadnFloat_I2C(uint32_t deviceNum, float *ToRead, uint32_t NbToRead, uint8_t slaveAddress);
+	int32_t WaitnFloat_I2C(uint32_t deviceNum, float *ToRead, uint32_t NbToRead, uint8_t slaveAddress, int32_t BlockingTimeOut_us);
+
+	/*********************************** INT32 ***********************************/
+
+	int32_t SendnInt32_I2C(uint32_t deviceNum, int32_t *ToSend, uint32_t NbToSend, uint8_t slaveAddress);
+	int32_t ReadnInt32_I2C(uint32_t deviceNum, int32_t *ToRead, uint32_t NbToRead, uint8_t slaveAddress);
+	int32_t WaitnInt32_I2C(uint32_t deviceNum, int32_t *ToRead, uint32_t NbToRead, uint8_t slaveAddress, int32_t BlockingTimeOut_us);
+
+	/*********************************** UINT32 ***********************************/
+	int32_t SendnUInt32_I2C(uint32_t deviceNum, uint32_t *ToSend, uint32_t NbToSend, uint8_t slaveAddress);
+	int32_t ReadnUInt32_I2C(uint32_t deviceNum, uint32_t *ToRead, uint32_t NbToRead, uint8_t slaveAddress);
+	int32_t WaitnUInt32_I2C(uint32_t deviceNum, uint32_t *ToRead, uint32_t NbToRead, uint8_t slaveAddress, int32_t BlockingTimeOut_us);
+	
+	/*********************************** INT16 ***********************************/
+	int32_t SendnInt16_I2C(uint32_t deviceNum, int16_t *ToSend, uint32_t NbToSend, uint8_t slaveAddress);
+	int32_t ReadnInt16_I2C(uint32_t deviceNum, int16_t *ToRead, uint32_t NbToRead, uint8_t slaveAddress);
+	int32_t WaitnInt16_I2C(uint32_t deviceNum, int16_t *ToRead, uint32_t NbToRead, uint8_t slaveAddress, int32_t BlockingTimeOut_us);
+	
+	/*********************************** UINT16 ***********************************/
+	int32_t SendnUInt16_I2C(uint32_t deviceNum, uint16_t *ToSend, uint32_t NbToSend, uint8_t slaveAddress);
+	int32_t ReadnUInt16_I2C(uint32_t deviceNum, uint16_t *ToRead, uint32_t NbToRead, uint8_t slaveAddress);
+	int32_t WaitnUInt16_I2C(uint32_t deviceNum, uint16_t *ToRead, uint32_t NbToRead, uint8_t slaveAddress, int32_t BlockingTimeOut_us);
+	
+	/*********************************** CHAR8 ***********************************/
+	int32_t SendnInt8_I2C(uint32_t deviceNum, int8_t *ToSend, uint32_t NbToSend, uint8_t slaveAddress);
+	int32_t ReadnInt8_I2C(uint32_t deviceNum, int8_t *ToRead, uint32_t NbToRead, uint8_t slaveAddress);
+	int32_t WaitnInt8_I2C(uint32_t deviceNum, int8_t *ToRead, uint32_t NbToRead, uint8_t slaveAddress, int32_t BlockingTimeOut_us);
+
+	/*********************************** UCHAR8 ***********************************/
+	int32_t SendnUInt8_I2C(uint32_t deviceNum, uint8_t *ToSend, uint32_t NbToSend, uint8_t slaveAddress);
+	int32_t ReadnUInt8_I2C(uint32_t deviceNum, uint8_t *ToRead, uint32_t NbToRead, uint8_t slaveAddress);
+	int32_t WaitnUInt8_I2C(uint32_t deviceNum, uint8_t *ToRead, uint32_t NbToRead, uint8_t slaveAddress, int32_t BlockingTimeOut_us);
+	
+#endif

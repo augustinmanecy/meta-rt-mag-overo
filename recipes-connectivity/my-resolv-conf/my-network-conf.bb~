@@ -1,0 +1,20 @@
+SUMMARY = "Custom configuration for network in ISM Marseille"
+DESCRIPTION = "This package modifies the files used to configure the network: /etc/network/interfaces, /etc/resolv.conf, /etc/wpa_supplicant.conf"
+LICENSE = "GPLv2"
+LIC_FILES_CHKSUM = "file://COPYING;md5=393a5ca445f6965873eca0259a17f833"
+
+PR = "r0"
+
+SRC_URI = "file://interfaces \
+           file://wpa_supplicant.conf \
+           file://resolv.conf "
+
+#S = "${WORKDIR}"
+
+do_install () {
+	install -m 0644 ${WORKDIR}/interfaces ${D}${sysconfdir}/network/interfaces
+	install -m 0644 ${WORKDIR}/wpa_supplicant.conf ${D}${sysconfdir}/wpa_supplicant.conf
+	install -m 0644 ${WORKDIR}/resolv.conf ${D}${sysconfdir}/resolv.conf
+}
+
+CONFFILES_${PN} = "${sysconfdir}/hosts ${sysconfdir}/network/interfaces"

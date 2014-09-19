@@ -1,0 +1,17 @@
+Now the opkg repository has change: 
+	it is:
+		https://downloads.gumstix.com/feeds/angstrom/ipk/glibc/armv7a/
+
+Par défaut les repositories de opkg sont enregistrés dans:
+ /etc/opkg:
+  
+root@overo:~/RT_MaG_ToolBox/ipk# ls /etc/opkg
+arch.conf        debug-feed.conf      opkg.conf        python-feed.conf
+base-feed.conf   gstreamer-feed.conf  overo-feed.conf  sdk-feed.conf
+base-feeds.conf  noarch-feed.conf     perl-feed.conf
+		
+example to download manually a package:
+	due to https we have to use the  "--no-check-certificate" option:
+	
+	wget --no-check-certificate https://downloads.gumstix.com/feeds/angstrom/ipk/glibc/armv7a/base/inetutils_1.8-r8.6_armv7a.ipk
+

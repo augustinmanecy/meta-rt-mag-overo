@@ -1,0 +1,24 @@
+FILESEXTRAPATHS_prepend := "${THISDIR}/linux-stable-3.5.7:"
+
+SRC_URI += " \
+    file://0036-add-RT-priority-to-spi-worker-thread.patch \
+    file://0037-add-to-spidev-asynchronous-capabilities.patch \    
+"
+do_install() {
+	cp -f ${WORKDIR}/git/include/linux/spi/spidev.h ${THISDIR}/linux-stable_3.5.7/spidev.h
+}
+
+do_install_append() {
+	install -d ${D}${includedir}/linux/spi
+	echo "PLOP: ${D}${includedir}/linux/spi"
+	#rm -f ${D}${includedir}/linux/spi/spidev.h
+	install -m 644 ${WORKDIR}/git/include/linux/spi/spidev.h ${D}${includedir}/linux/spi/spidev.h
+}
+
+FILES_${PN} = " \
+	${includedir} \
+	${includedir}/linux \
+	${includedir}/linux/spi \
+	${includedir}/linux/spi/spidev.h \
+ "
+
