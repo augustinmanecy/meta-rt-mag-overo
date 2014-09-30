@@ -10,8 +10,7 @@ BBLAYERS ?= " \
   ${HOME}/yocto/poky-daisy/meta-yocto \
   ${HOME}/yocto/poky-daisy/meta-openembedded/meta-oe \
   ${HOME}/yocto/poky-daisy/meta-openembedded/meta-networking \
-  ${HOME}/yocto/overo/meta-overo \
-  ${HOME}/yocto/overo/meta-rt-mag \
+  ${HOME}/yocto/overo/meta-rt-mag-overo \
   "
 
 BBLAYERS_NON_REMOVABLE ?= " \
