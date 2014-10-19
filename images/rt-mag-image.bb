@@ -22,8 +22,9 @@ CPU_TOOLS = " \
  "
  
 CUSTOMIZATIONS_RT_MaG = " \
-    opkg opkg-config-base \
-    my-network-conf \
+	 inetutils-ftp \ 
+	 openssl openssl-conf ca-certificates curl \
+    opkg opkg-config-base opkg-collateral \
     rt-mag-toolbox-conf \
  "
 # inetutils \ doesn't seem to work except if installed with opkg

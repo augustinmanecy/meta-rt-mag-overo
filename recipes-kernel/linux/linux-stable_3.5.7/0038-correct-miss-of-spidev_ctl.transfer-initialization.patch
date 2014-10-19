@@ -1,0 +1,34 @@
+From abc8be425d8dbc0bb448e828cf17d1cbd846aec7 Mon Sep 17 00:00:00 2001
+From: Auto Configured <auto.configured>
+Date: Fri, 19 Sep 2014 19:43:26 +0200
+Subject: [PATCH] correct miss of spidev_ctl.transfer initialization
+
+---
+ drivers/spi/spidev.c |    4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/spi/spidev.c b/drivers/spi/spidev.c
+index 745b437..8d76ceb 100644
+--- a/drivers/spi/spidev.c
++++ b/drivers/spi/spidev.c
+@@ -204,6 +204,8 @@ spidev_async(struct spidev_data *spidev, struct spi_message *message)
+ static inline ssize_t
+ spidev_async_write(struct spidev_data *spidev, size_t len)
+ {
++	spidev_ctl.transfer.tx_buf = spidev->buffer;
++	spidev_ctl.transfer.len = len;
+ 	/* I take advantage of the busy flag to not treat the new message; to let the previous one terminate properly...
+ 	/*      => need to check that it ws not incompatible with SPI_IOC_MESSAGE(>1) */
+ 	if (spidev_ctl.busy == 0){
+@@ -223,6 +225,8 @@ spidev_async_write(struct spidev_data *spidev, size_t len)
+ static inline ssize_t
+ spidev_async_read(struct spidev_data *spidev, size_t len)
+ {
++	spidev_ctl.transfer.rx_buf = spidev->buffer;
++	spidev_ctl.transfer.len = len;
+ 	/* I take advantage of the busy flag to not treat the new message; to let the previous one terminate properly...
+ 	/*      => need to check that it ws not incompatible with SPI_IOC_MESSAGE(>1) */
+ 	if (spidev_ctl.busy == 0){
+-- 
+1.7.9.5
+

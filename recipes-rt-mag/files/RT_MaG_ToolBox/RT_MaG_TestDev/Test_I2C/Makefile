@@ -1,12 +1,12 @@
 #############################################################################
 #
 #	Makefile for building a I2C demo application making simple communication 
-#		an arduino board 
+#		to an arduino board 
 #
 #############################################################################
 
-APPNAME= DemoI2C
-CC=gcc
+APPNAME = DemoI2C
+CC? = gcc
 CFLAGS += \
 	-std=gnu99 \
 	-Wall \

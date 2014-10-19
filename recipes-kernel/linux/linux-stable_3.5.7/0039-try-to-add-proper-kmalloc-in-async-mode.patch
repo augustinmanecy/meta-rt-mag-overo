@@ -1,0 +1,409 @@
+From deeb5108453966606b9643e2bda623a761c2e9ee Mon Sep 17 00:00:00 2001
+From: Auto Configured <auto.configured>
+Date: Mon, 22 Sep 2014 19:26:25 +0200
+Subject: [PATCH] try to add proper kmalloc in async mode
+
+---
+ drivers/spi/spidev.c |  188 ++++++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 138 insertions(+), 50 deletions(-)
+
+diff --git a/drivers/spi/spidev.c b/drivers/spi/spidev.c
+index 8d76ceb..a4298fe 100644
+--- a/drivers/spi/spidev.c
++++ b/drivers/spi/spidev.c
+@@ -103,7 +103,14 @@ module_param(bufsiz, uint, S_IRUGO);
+ MODULE_PARM_DESC(bufsiz, "data bytes in biggest supported SPI message");
+ 
+ static struct spidev_control spidev_ctl;
+-
++static struct spi_ioc_transfer	*ioc;		/* pointer to the kernel space spi_ioc_transfer structure:
++															allocated at each new message, if previous one was completed */
++static int ioc_free = 1;						/* tell if a new message can be sent/read, i.e: memory can be allocated again */
++static struct spidev_data	*spidev_ptr;
++static struct spi_device	*spi;
++static struct spi_ioc_transfer *ioc;
++static unsigned n_xfers;
++static struct spi_transfer	*k_xfers;
+ /*-------------------------------------------------------------------------*/
+ 
+ /*
+@@ -112,14 +119,69 @@ static struct spidev_control spidev_ctl;
+  */
+ static void spidev_complete(void *arg)
+ {
++	struct spi_ioc_transfer *u_tmp;
++	unsigned		n;
++	u8			*buf;
++	
++	printk("spidev_sync_completion\n");
++	
+ 	complete(arg);
++	
++	/* copy any rx data out of bounce buffer */
++	buf = spidev_ptr->buffer;
++	for (n = n_xfers, u_tmp = ioc; n; n--, u_tmp++) {
++		if (u_tmp->rx_buf) {
++			if (__copy_to_user((u8 __user *)
++					(uintptr_t) u_tmp->rx_buf, buf,
++					u_tmp->len)) {
++				printk("spidev copy_to_user error!\n");
++				goto done;
++			}
++		}
++		buf += u_tmp->len;
++	}
++done:
++	kfree(k_xfers);	
++	printk("spi_transfer free now!\n");
++	/* Mark the message as completed to allow further spi_async() call */
++	spidev_ctl.busy = 0;
++	/* free the kernel space copy of user message */
++	kfree(ioc);	
++	printk("ioc free now!\n");
++	ioc_free = 1;
+ }
+ 
+ /*--------------------------Callback for Completion---------------------------*/
+ static void spidev_async_completion_handler(void *arg)
+ {
++	struct spi_ioc_transfer *u_tmp;
++	unsigned		n;
++	u8			*buf;
++	
++	printk("spidev_async_completion\n");
++	
++	/* copy any rx data out of bounce buffer */
++	buf = spidev_ptr->buffer;
++	for (n = n_xfers, u_tmp = ioc; n; n--, u_tmp++) {
++		if (u_tmp->rx_buf) {
++			if (__copy_to_user((u8 __user *)
++					(uintptr_t) u_tmp->rx_buf, buf,
++					u_tmp->len)) {
++				printk("spidev copy_to_user error!\n");
++				goto done;
++			}
++		}
++		buf += u_tmp->len;
++	}
++done:
++	kfree(k_xfers);	
++	printk("spi_transfer free now!\n");
+ 	/* Mark the message as completed to allow further spi_async() call */
+-	spidev_ctl.busy = 0;	
++	spidev_ctl.busy = 0;
++	/* free the kernel space copy of user message */
++	kfree(ioc);	
++	printk("ioc free now!\n");
++	ioc_free = 1;
+ }
+ 
+ /*--------------------------SPI Sync---------------------------*/
+@@ -157,6 +219,8 @@ spidev_sync_write(struct spidev_data *spidev, size_t len)
+ 		};
+ 	struct spi_message	m;
+ 
++	printk("spidev_sync_write\n");
++	
+ 	spi_message_init(&m);
+ 	spi_message_add_tail(&t, &m);
+ 	return spidev_sync(spidev, &m);
+@@ -171,6 +235,8 @@ spidev_sync_read(struct spidev_data *spidev, size_t len)
+ 		};
+ 	struct spi_message	m;
+ 
++	printk("spidev_sync_read\n");
++	
+ 	spi_message_init(&m);
+ 	spi_message_add_tail(&t, &m);
+ 	return spidev_sync(spidev, &m);
+@@ -184,6 +250,8 @@ spidev_async(struct spidev_data *spidev, struct spi_message *message)
+ 	int status;
+ 	unsigned long flags;	// added
+ 	
++	printk("spidev_async\n");
++	
+ 	/* redirect to the function managing the busy flag */
+ 	message->complete = spidev_async_completion_handler;
+ 	message->context = NULL;	// no completion stack
+@@ -204,6 +272,8 @@ spidev_async(struct spidev_data *spidev, struct spi_message *message)
+ static inline ssize_t
+ spidev_async_write(struct spidev_data *spidev, size_t len)
+ {
++	printk("spidev_async_write\n");
++	
+ 	spidev_ctl.transfer.tx_buf = spidev->buffer;
+ 	spidev_ctl.transfer.len = len;
+ 	/* I take advantage of the busy flag to not treat the new message; to let the previous one terminate properly...
+@@ -225,6 +295,8 @@ spidev_async_write(struct spidev_data *spidev, size_t len)
+ static inline ssize_t
+ spidev_async_read(struct spidev_data *spidev, size_t len)
+ {
++	printk("spidev_async_read\n");
++	
+ 	spidev_ctl.transfer.rx_buf = spidev->buffer;
+ 	spidev_ctl.transfer.len = len;
+ 	/* I take advantage of the busy flag to not treat the new message; to let the previous one terminate properly...
+@@ -251,6 +323,8 @@ spidev_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
+ 	struct spidev_data	*spidev;
+ 	ssize_t			status = 0;
+ 
++	printk("spidev_read\n");
++	
+ 	/* chipselect only toggles at start or end of operation */
+ 	if (count > bufsiz)
+ 		return -EMSGSIZE;
+@@ -282,6 +356,8 @@ spidev_write(struct file *filp, const char __user *buf,
+ 	ssize_t			status = 0;
+ 	unsigned long		missing;
+ 
++	printk("spidev_write\n");
++
+ 	/* chipselect only toggles at start or end of operation */
+ 	if (count > bufsiz)
+ 		return -EMSGSIZE;
+@@ -299,18 +375,19 @@ spidev_write(struct file *filp, const char __user *buf,
+ 	return status;
+ }
+ 
+-static int spidev_message(struct spidev_data *spidev,
+-		struct spi_ioc_transfer *u_xfers, unsigned n_xfers)
++static int spidev_message(unsigned int my_n_ioc)
+ {
+ 	struct spi_message	msg;
+-	struct spi_transfer	*k_xfers;
+ 	struct spi_transfer	*k_tmp;
+ 	struct spi_ioc_transfer *u_tmp;
+ 	unsigned		n, total;
+ 	u8			*buf;
+ 	int			status = -EFAULT;
+ 
++	printk("spidev_message\n");
++
+ 	spi_message_init(&msg);
++	n_xfers = my_n_ioc;
+ 	k_xfers = kcalloc(n_xfers, sizeof(*k_tmp), GFP_KERNEL);
+ 	if (k_xfers == NULL)
+ 		return -ENOMEM;
+@@ -319,9 +396,9 @@ static int spidev_message(struct spidev_data *spidev,
+ 	 * We walk the array of user-provided transfers, using each one
+ 	 * to initialize a kernel version of the same transfer.
+ 	 */
+-	buf = spidev->buffer;
++	buf = spidev_ptr->buffer;
+ 	total = 0;
+-	for (n = n_xfers, k_tmp = k_xfers, u_tmp = u_xfers;
++	for (n = n_xfers, k_tmp = k_xfers, u_tmp = ioc;
+ 			n;
+ 			n--, k_tmp++, u_tmp++) {
+ 		k_tmp->len = u_tmp->len;
+@@ -353,49 +430,40 @@ static int spidev_message(struct spidev_data *spidev,
+ 		k_tmp->delay_usecs = u_tmp->delay_usecs;
+ 		k_tmp->speed_hz = u_tmp->speed_hz;
+ #ifdef VERBOSE
+-		dev_dbg(&spidev->spi->dev,
++		dev_dbg(&spidev_ptr->spi->dev,
+ 			"  xfer len %zd %s%s%s%dbits %u usec %uHz\n",
+ 			u_tmp->len,
+ 			u_tmp->rx_buf ? "rx " : "",
+ 			u_tmp->tx_buf ? "tx " : "",
+ 			u_tmp->cs_change ? "cs " : "",
+-			u_tmp->bits_per_word ? : spidev->spi->bits_per_word,
++			u_tmp->bits_per_word ? : spidev_ptr->spi->bits_per_word,
+ 			u_tmp->delay_usecs,
+-			u_tmp->speed_hz ? : spidev->spi->max_speed_hz);
++			u_tmp->speed_hz ? : spidev_ptr->spi->max_speed_hz);
+ #endif
+ 		spi_message_add_tail(k_tmp, &msg);
+ 	}
+ 	
+ 	/* synchronous mode enabled by default */
+-	switch (u_xfers->mode) {
++	switch (ioc->mode) {
+ 		case SPIDEV_ASYNC_MODE:
+-			status = spidev_async(spidev, &msg);
++			printk("spidev_async call:\n");
++			status = spidev_async(spidev_ptr, &msg);
+ 			break;
+ 		default:
+-			status = spidev_sync(spidev, &msg);
++			printk("spidev_sync call:\n");
++			status = spidev_sync(spidev_ptr, &msg);
+ 			break;
+ 	}
+ 	
+ 	if (status < 0)
+-		goto done;
+-
+-	/* copy any rx data out of bounce buffer */
+-	buf = spidev->buffer;
+-	for (n = n_xfers, u_tmp = u_xfers; n; n--, u_tmp++) {
+-		if (u_tmp->rx_buf) {
+-			if (__copy_to_user((u8 __user *)
+-					(uintptr_t) u_tmp->rx_buf, buf,
+-					u_tmp->len)) {
+-				status = -EFAULT;
+-				goto done;
+-			}
+-		}
+-		buf += u_tmp->len;
++	{
++		printk("status error!\n");
++		//goto done;
++		kfree(k_xfers);
+ 	}
+-	status = total;
+ 
+ done:
+-	kfree(k_xfers);
++//	kfree(k_xfers);
+ 	return status;
+ }
+ 
+@@ -404,11 +472,11 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+ {
+ 	int			err = 0;
+ 	int			retval = 0;
+-	struct spidev_data	*spidev;
+-	struct spi_device	*spi;
++	//struct spidev_data	*spidev_ptr;
++	//struct spi_device	*spi;
+ 	u32			tmp;
+ 	unsigned		n_ioc;
+-	struct spi_ioc_transfer	*ioc;
++	//struct spi_ioc_transfer	*ioc;
+ 
+ 	/* Check type and command number */
+ 	if (_IOC_TYPE(cmd) != SPI_IOC_MAGIC)
+@@ -430,10 +498,10 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+ 	/* guard against device removal before, or while,
+ 	 * we issue this ioctl.
+ 	 */
+-	spidev = filp->private_data;
+-	spin_lock_irq(&spidev->spi_lock);
+-	spi = spi_dev_get(spidev->spi);
+-	spin_unlock_irq(&spidev->spi_lock);
++	spidev_ptr = filp->private_data;
++	spin_lock_irq(&spidev_ptr->spi_lock);
++	spi = spi_dev_get(spidev_ptr->spi);
++	spin_unlock_irq(&spidev_ptr->spi_lock);
+ 
+ 	if (spi == NULL)
+ 		return -ESHUTDOWN;
+@@ -444,27 +512,33 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+ 	 *    data fields while SPI_IOC_RD_* reads them;
+ 	 *  - SPI_IOC_MESSAGE needs the buffer locked "normally".
+ 	 */
+-	mutex_lock(&spidev->buf_lock);
++	 if (ioc_free)
++		mutex_lock(&spidev_ptr->buf_lock);
+ 
+ 	switch (cmd) {
+ 	/* read requests */
+ 	case SPI_IOC_RD_MODE:
++		printk("IOCTL_case: SPI_IOC_RD_MODE\n");
+ 		retval = __put_user(spi->mode & SPI_MODE_MASK,
+ 					(__u8 __user *)arg);
+ 		break;
+ 	case SPI_IOC_RD_LSB_FIRST:
++		printk("IOCTL_case: SPI_IOC_RD_LSB_FIRST\n");
+ 		retval = __put_user((spi->mode & SPI_LSB_FIRST) ?  1 : 0,
+ 					(__u8 __user *)arg);
+ 		break;
+ 	case SPI_IOC_RD_BITS_PER_WORD:
++		printk("IOCTL_case: SPI_IOC_RD_BITS_PER_WORD\n");
+ 		retval = __put_user(spi->bits_per_word, (__u8 __user *)arg);
+ 		break;
+ 	case SPI_IOC_RD_MAX_SPEED_HZ:
++		printk("IOCTL_case: SPI_IOC_RD_MAX_SPEED_HZ\n");
+ 		retval = __put_user(spi->max_speed_hz, (__u32 __user *)arg);
+ 		break;
+ 
+ 	/* write requests */
+ 	case SPI_IOC_WR_MODE:
++		printk("IOCTL_case: SPI_IOC_WR_MODE\n");
+ 		retval = __get_user(tmp, (u8 __user *)arg);
+ 		if (retval == 0) {
+ 			u8	save = spi->mode;
+@@ -484,6 +558,7 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+ 		}
+ 		break;
+ 	case SPI_IOC_WR_LSB_FIRST:
++		printk("IOCTL_case: SPI_IOC_WR_LSB_FIRST\n");
+ 		retval = __get_user(tmp, (__u8 __user *)arg);
+ 		if (retval == 0) {
+ 			u8	save = spi->mode;
+@@ -501,6 +576,7 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+ 		}
+ 		break;
+ 	case SPI_IOC_WR_BITS_PER_WORD:
++		printk("IOCTL_case: SPI_IOC_WR_BITS_PER_WORD\n");
+ 		retval = __get_user(tmp, (__u8 __user *)arg);
+ 		if (retval == 0) {
+ 			u8	save = spi->bits_per_word;
+@@ -514,6 +590,7 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+ 		}
+ 		break;
+ 	case SPI_IOC_WR_MAX_SPEED_HZ:
++		printk("IOCTL_case: SPI_IOC_WR_MAX_SPEED_HZ\n");
+ 		retval = __get_user(tmp, (__u32 __user *)arg);
+ 		if (retval == 0) {
+ 			u32	save = spi->max_speed_hz;
+@@ -528,6 +605,7 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+ 		break;
+ 
+ 	default:
++		printk("IOCTL_case: default\n");
+ 		/* segmented and/or full-duplex I/O request */
+ 		if (_IOC_NR(cmd) != _IOC_NR(SPI_IOC_MESSAGE(0))
+ 				|| _IOC_DIR(cmd) != _IOC_WRITE) {
+@@ -545,24 +623,34 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+ 			break;
+ 
+ 		/* copy into scratch area */
+-		ioc = kmalloc(tmp, GFP_KERNEL);
+-		if (!ioc) {
+-			retval = -ENOMEM;
+-			break;
++		if (ioc_free)
++		{
++			/* allocate memory to copy the user message in kernel space and mark ioc as not free */
++			ioc_free = 0;
++			ioc = kmalloc(tmp, GFP_KERNEL);
++			if (!ioc) {
++				retval = -ENOMEM;
++				break;
++			}
++			if (__copy_from_user(ioc, (void __user *)arg, tmp)) {
++				kfree(ioc);
++				retval = -EFAULT;
++				break;
++			}
++
++			/* translate to spi_message, execute */
++			printk("ioc locked now!\n");
++			retval = spidev_message(n_ioc);
++			//kfree(ioc);
+ 		}
+-		if (__copy_from_user(ioc, (void __user *)arg, tmp)) {
+-			kfree(ioc);
+-			retval = -EFAULT;
+-			break;
++		else
++		{
++			printk("spidev ioc not free! message not sent!\n");
+ 		}
+-
+-		/* translate to spi_message, execute */
+-		retval = spidev_message(spidev, ioc, n_ioc);
+-		kfree(ioc);
+ 		break;
+ 	}
+ 
+-	mutex_unlock(&spidev->buf_lock);
++	mutex_unlock(&spidev_ptr->buf_lock);
+ 	spi_dev_put(spi);
+ 	return retval;
+ }
+-- 
+1.7.9.5
+

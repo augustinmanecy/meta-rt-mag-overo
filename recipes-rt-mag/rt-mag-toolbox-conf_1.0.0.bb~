@@ -25,8 +25,6 @@ SRC_URI = "\
 	   file://RT_MaG_ToolBox/RT_MaG_TestDev/Test_I2C/time_tools.h \
 	   file://RT_MaG_ToolBox/RT_MaG_TestDev/Test_I2C/UpToDate \
 	   file://RT_MaG_ToolBox/RT_MaG_TestDev/Test_I2C/Makefile \
-	   file://RT_MaG_ToolBox/ipk/inetutils_1.8-r8.6_armv7a.ipk \
-	   file://RT_MaG_ToolBox/ipk/libreadline5_5.2-r8.6_armv7a.ipk \
 	   file://RT_MaG_ToolBox/ipk/Install_Inetutils \
 	  "
 
@@ -44,8 +42,6 @@ do_install () {
 	# provide inetutils ipk files to install FTP
 	install -d ${D}/home/root/RT_MaG_ToolBox/ipk/
 	install -m 0744 RT_MaG_ToolBox/ipk/Install_Inetutils 						${D}/home/root/RT_MaG_ToolBox/ipk/Install_Inetutils
-	install -m 0644 RT_MaG_ToolBox/ipk/libreadline5_5.2-r8.6_armv7a.ipk 	${D}/home/root/RT_MaG_ToolBox/ipk/libreadline5_5.2-r8.6_armv7a.ipk
-	install -m 0644 RT_MaG_ToolBox/ipk/inetutils_1.8-r8.6_armv7a.ipk		${D}/home/root/RT_MaG_ToolBox/ipk/inetutils_1.8-r8.6_armv7a.ipk
 	# RT-MaG_Program folder
 	install -d ${D}/home/root/RT_MaG_ToolBox/RT_MaG_Program/
 	install -m 0744 RT_MaG_ToolBox/RT_MaG_Program/PutFTP 					${D}/home/root/RT_MaG_ToolBox/RT_MaG_Program/PutFTP
@@ -53,6 +49,10 @@ do_install () {
 	install -m 0744 RT_MaG_ToolBox/RT_MaG_Program/RunModel 				${D}/home/root/RT_MaG_ToolBox/RT_MaG_Program/RunModel
 	install -m 0744 RT_MaG_ToolBox/RT_MaG_Program/UpToDateModel 		${D}/home/root/RT_MaG_ToolBox/RT_MaG_Program/UpToDateModel
 	install -m 0744 RT_MaG_ToolBox/RT_MaG_Program/CompileTestModels 	${D}/home/root/RT_MaG_ToolBox/RT_MaG_Program/CompileTestModels
+	# add FTP tools the /usr/bin to make them available from everywhere
+	install -d ${D}${bindir}
+	install -m 0755 RT_MaG_ToolBox/RT_MaG_Program/PutFTP ${D}${bindir}
+	install -m 0755 RT_MaG_ToolBox/RT_MaG_Program/PullFTP ${D}${bindir}
 	# TimeLogger tools
 	install -d ${D}/home/root/RT_MaG_ToolBox/RT_MaG_Program/TimeLogger
 	install -m 0744 RT_MaG_ToolBox/RT_MaG_Program/SendTimeLogger 		${D}/home/root/RT_MaG_ToolBox/RT_MaG_Program/SendTimeLogger
@@ -78,5 +78,6 @@ FILES_${PN} += " \
             ${sysconfidir}/profile.d/systemstat.sh \
             ${sysconfidir}/profile.d/term-prompt.sh \
             ${sysconfidir}/profile.d/GoToRT-MaG_Folder.sh \
+            ${bindir}/* \
          "
          

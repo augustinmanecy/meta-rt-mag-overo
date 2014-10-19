@@ -49,6 +49,10 @@ do_install () {
 	install -m 0744 RT_MaG_ToolBox/RT_MaG_Program/RunModel 				${D}/home/root/RT_MaG_ToolBox/RT_MaG_Program/RunModel
 	install -m 0744 RT_MaG_ToolBox/RT_MaG_Program/UpToDateModel 		${D}/home/root/RT_MaG_ToolBox/RT_MaG_Program/UpToDateModel
 	install -m 0744 RT_MaG_ToolBox/RT_MaG_Program/CompileTestModels 	${D}/home/root/RT_MaG_ToolBox/RT_MaG_Program/CompileTestModels
+	# add FTP tools the /usr/bin to make them available from everywhere
+	install -d ${D}${bindir}
+	install -m 0755 RT_MaG_ToolBox/RT_MaG_Program/PutFTP ${D}${bindir}
+	install -m 0755 RT_MaG_ToolBox/RT_MaG_Program/PullFTP ${D}${bindir}
 	# TimeLogger tools
 	install -d ${D}/home/root/RT_MaG_ToolBox/RT_MaG_Program/TimeLogger
 	install -m 0744 RT_MaG_ToolBox/RT_MaG_Program/SendTimeLogger 		${D}/home/root/RT_MaG_ToolBox/RT_MaG_Program/SendTimeLogger
@@ -57,7 +61,7 @@ do_install () {
 	install -d ${D}/home/root/RT_MaG_ToolBox/RT_MaG_TestDev/
 	# Test_I2C folder
 	install -d ${D}/home/root/RT_MaG_ToolBox/RT_MaG_TestDev/Test_I2C
-	install -m 0644 RT_MaG_ToolBox/RT_MaG_TestDev/Test_I2C/defines.h ${D}/home/root/RT_MaG_ToolBox/RT_MaG_TestDev/Test_I2C/defines.h
+	install -m 0644 RT_MaG_ToolBox/RT_MaG_TestDev/Test_I2C/defines.h 		${D}/home/root/RT_MaG_ToolBox/RT_MaG_TestDev/Test_I2C/defines.h
 	install -m 0644 RT_MaG_ToolBox/RT_MaG_TestDev/Test_I2C/library_I2C.c ${D}/home/root/RT_MaG_ToolBox/RT_MaG_TestDev/Test_I2C/library_I2C.c
 	install -m 0644 RT_MaG_ToolBox/RT_MaG_TestDev/Test_I2C/library_I2C.h ${D}/home/root/RT_MaG_ToolBox/RT_MaG_TestDev/Test_I2C/library_I2C.h
 	install -m 0644 RT_MaG_ToolBox/RT_MaG_TestDev/Test_I2C/DemoI2C.c 		${D}/home/root/RT_MaG_ToolBox/RT_MaG_TestDev/Test_I2C/DemoI2C.c 
@@ -74,5 +78,6 @@ FILES_${PN} += " \
             ${sysconfidir}/profile.d/systemstat.sh \
             ${sysconfidir}/profile.d/term-prompt.sh \
             ${sysconfidir}/profile.d/GoToRT-MaG_Folder.sh \
+            ${bindir}/* \
          "
          

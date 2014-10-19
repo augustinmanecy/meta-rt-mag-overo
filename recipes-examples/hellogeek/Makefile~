@@ -1,0 +1,25 @@
+.PHONY : all clean install uninstall
+ 
+PREFIX ?= $(DESTDIR)/usr
+BINDIR ?= $(PREFIX)/bin
+ 
+HELLO_src = hello.c
+HELLO_bin = hello
+HELLO_tgt = $(BINDIR)/$(HELLO_bin)
+ 
+all : $(HELLO_bin)
+ 
+$(HELLO_bin) : $(HELLO_src)
+ 
+$(HELLO_tgt) : $(HELLO_bin)
+	install -d $(BINDIR)
+	install -m 0755 $^ $@
+ 
+clean :
+	rm $(HELLO_bin)
+ 
+install : $(HELLO_tgt)
+ 
+uninstall :
+	rm $(BINDIR)/$(HELLO_tgt)
+	
