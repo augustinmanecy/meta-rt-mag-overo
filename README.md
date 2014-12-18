@@ -24,7 +24,7 @@ Here you will find files needed to build a Linux image with the RT-MaG tools pre
   - I2C tools, SPI tools, PWM modules, etc.
   - basic network tools,
   - utilities to flash NAND,
-  - a patched SPIdev driver performing asynchronous read/write operations,
+  - working on a patch to make SPIdev asynchronous (asynchronous read/write operations),
   - RT-MaG tools,
   - etc.
 
